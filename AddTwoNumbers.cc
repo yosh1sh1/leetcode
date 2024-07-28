@@ -11,8 +11,6 @@
 
 #include <bits/stdc++.h>
 
-typedef long long ll;
-
 using namespace std;
 
 struct ListNode {
@@ -25,57 +23,33 @@ struct ListNode {
 
 class Solution {
 public:
-    ll calcSum(ListNode* ln) {
-        if (ln->next != nullptr) {
-            return calcSum(ln->next) * 10LL + ln->val;
-        } else {
-            return (ll)ln->val;
+    ListNode* createRes(ListNode* p1, ListNode* p2, int carry_flag) {
+        int sum = 0;
+        ListNode* ret;
+        if (p1 != nullptr && p2 != nullptr) {
+            sum = p1->val + p2->val + carry_flag;
+            ret = createRes(p1->next, p2->next, sum / 10);
+        } else if (p1 != nullptr && p2 == nullptr) {
+            sum = p1->val + carry_flag;
+            ret = createRes(p1->next, nullptr, sum / 10);
+        } else if (p1 == nullptr && p2 != nullptr) {
+            sum = p2->val + carry_flag;
+            ret = createRes(nullptr, p2->next, sum / 10);
+        } else { // p1 == nullptr && p2 == nullptr
+            if (carry_flag) {
+                ListNode* res = new ListNode(carry_flag, nullptr);
+                return res;
+            } else {
+                return nullptr;
+            }
         }
-    }
 
-    ListNode* createRes(ll sum) {
-        int val = (int)(sum % 10LL);
-        ListNode* res = new ListNode(val);
-
-        ll tmp = sum / 10LL;
-        if (tmp != 0) {
-            res->next = createRes(tmp);
-        }
+        ListNode* res = new ListNode(sum % 10, ret);
         return res;
     }
 
-    pair<ListNode*, int> createRes(ListNode* p1, ListNode* p2, int carry_flag) {
-        ListNode* res = new ListNode();
-
-        int sum = 0;
-        pair<ListNode*, int> ret;
-        if (p1 != nullptr && p2 != nullptr) {
-            ret = createRes(p1->next, p2->next, 0);
-            sum = p1->val + p2->val + ret.second;
-        } else if (p1 != nullptr && p2 == nullptr) {
-            ret = createRes(p1->next, nullptr, 0);
-            sum = p1->val + ret.second;
-        } else if (p1 == nullptr && p2 != nullptr) {
-            ret = createRes(nullptr, p2->next, 0);
-            sum = p2->val + ret.second;
-        } else { // p1 == nullptr && p2 == nullptr
-            return pair<ListNode*, int> {nullptr, 0};
-        }
-
-        res->val = sum % 10;
-        res->next = ret.first;
-        return pair<ListNode*, int> {res, sum / 10};
-    }
-
     ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        pair<ListNode*, int> ret = createRes(l1, l2, 0);
-        if (ret.second) {
-            ListNode* res = new ListNode(ret.second, ret.first);
-            return res;
-        } else {
-            return ret.first;
-        }
-
+        return createRes(l1, l2, 0);
     }    
 };
 
@@ -84,12 +58,6 @@ int main() {
 
     ListNode l1;
     ListNode l2;
-
-    l1.val = 7;
-    l1.next = 
-
-    
-
 
     return 0;
 }
